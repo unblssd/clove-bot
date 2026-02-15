@@ -46,7 +46,7 @@ client.once(Events.ClientReady, async () => {
         '• Haz clic en "Contratar" y alcanza tu rango sin estrés.'
       )
       .setColor(0xFFFFFF) // blanco
-      .setImage('https://imgur.com/a/oNf5s2M'); // <- Cambia a tu URL
+      .setImage('https://i.postimg.cc/FFGsNW6y/banner.png')
 
     await panel.send({
       embeds: [embed],
