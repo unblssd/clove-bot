@@ -6,6 +6,7 @@ const {
   ButtonStyle,
   StringSelectMenuBuilder,
   Events,
+  EmbedBuilder,
 } = require('discord.js');
 
 const client = new Client({
@@ -22,23 +23,33 @@ const userData = {};
 
 // ================= READY =================
 client.once(Events.ClientReady, async () => {
-
   console.log(`Conectado como ${client.user.tag}`);
 
   // Buscar canal
   const panel = await client.channels.fetch(PANEL_CHANNEL);
-
   const messages = await panel.messages.fetch({ limit: 10 });
 
-  const exists = messages.some(msg =>
-    msg.author.id === client.user.id &&
-    msg.content.includes('Clove Boost')
+  const exists = messages.some(
+    (msg) =>
+      msg.author.id === client.user.id &&
+      msg.content.includes('Clove Boost')
   );
 
   // Enviar panel solo si no existe
   if (!exists) {
+    // Embed inicial
+    const embed = new EmbedBuilder()
+      .setTitle('💎 Clove Boost - ¡Tu Elo sin estrés! 💎')
+      .setDescription(
+        '¿Cómo contrato un servicio de EloBoost?\n\n' +
+        'Sube tu rango lo más rápido posible con uno de nuestros servicios. Garantizamos total confidencialidad y seguridad de tu cuenta.\n\n' +
+        '• Haz clic en "Contratar" y alcanza tu rango sin estrés.'
+      )
+      .setColor(0xFFFFFF) // blanco
+      .setImage('https://imgur.com/a/oNf5s2M'); // <- Cambia a tu URL
+
     await panel.send({
-      content: '💎 **Clove Boost - Valorant**\nHaz clic para comenzar:',
+      embeds: [embed],
       components: [
         new ActionRowBuilder().addComponents(
           new ButtonBuilder()
@@ -49,9 +60,7 @@ client.once(Events.ClientReady, async () => {
       ],
     });
   }
-
-}); // 👈 AQUÍ se cierra bien el READY
-
+}); // 👈 Cierra READY
 
 // ================= MENÚ RANGOS =================
 function rangoMenu(id) {
@@ -73,15 +82,12 @@ function rangoMenu(id) {
   );
 }
 
-
 // ================= INTERACCIONES =================
 client.on(Events.InteractionCreate, async (interaction) => {
-
   const userId = interaction.user.id;
 
   // INICIAR
   if (interaction.isButton() && interaction.customId === 'start') {
-
     userData[userId] = {};
 
     await interaction.reply({
@@ -91,10 +97,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
     });
   }
 
-
   // RANGO ACTUAL
   if (interaction.isStringSelectMenu() && interaction.customId === 'actual') {
-
     userData[userId].actual = interaction.values[0];
 
     await interaction.update({
@@ -103,12 +107,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
     });
   }
 
-
   // RANGO DESEADO
   if (interaction.isStringSelectMenu() && interaction.customId === 'deseado') {
-
     userData[userId].deseado = interaction.values[0];
-
     const data = userData[userId];
 
     await interaction.update({
@@ -128,10 +129,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
     });
   }
 
-
   // CONFIRMAR
   if (interaction.isButton() && interaction.customId === 'confirmar') {
-
     const data = userData[userId];
 
     // Mensaje al usuario
@@ -158,9 +157,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     delete userData[userId];
   }
-
 });
-
 
 // ================= LOGIN =================
 client.login(TOKEN);
